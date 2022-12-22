@@ -1,36 +1,40 @@
 import json
 import uuid
+import logging
 from twisted.internet import protocol, reactor, endpoints
 
+logging.basicConfig(level=logging.DEBUG)
 
 class RpcProtocol(protocol.Protocol):
     def __init__(self, factory):
-        print(1)
-        self.factory: EchoFactory = factory
+        logging.debug(1)
+        self.factory = factory
+
+    def send(self, obj):
+        self.transport.write(bytes(json.dumps(obj), "UTF8"))
 
     def connectionLost(self,res):
         if self.role=="client":
             self.factory.clients.remove(self)
-        return
     def dataReceived(self, data):
         try:
             data = json.loads(data)
-            print(data)
+            logging.debug(data)
         except json.JSONDecodeError:
-            self.transport.write(b'{"res":"error","error":"not json"}')
+            self.send({"res":"error","error":"not json"})
             return
         if "res" in data:
             return
         if data["type"] == "handshake":
             self.do_handshake(data)
-            print(self.factory.services)
-        if self not in self.factory.clients:
-            self.transport.write(b'{"res":"error","error":"invalid request"}')
-        if data["type"] == "respond":
+            logging.debug(self.factory.services)
+        elif self not in self.factory.clients:
+            self.send({"res":"error","error":"invalid request"})
+        elif data["type"] == "respond":
             self.factory.make_respond(data["jobid"], data["data"])
             ret = {"res": "ok", "next_jobid": str(uuid.uuid4())}
-            self.transport.write(bytes(json.dumps(ret), "UTF8"))
-        if data["type"] == "request":
+            self.send(ret)
+        elif data["type"] == "request":
             self.factory.make_request(
                 self, data["service"], data["data"], data["jobid"]
             )
@@ -41,28 +45,23 @@ class RpcProtocol(protocol.Protocol):
             self.role = "client"
             self.factory.clients.append(self)
             initial_jobid = uuid.uuid4()
-            self.transport.write(
-                bytes(
-                    json.dumps({"res": "ok", "initial_jobid": str(initial_jobid)}),
-                    "UTF8",
-                )
-            )
+            self.send({"res": "ok", "initial_jobid": str(initial_jobid)})
+                    
             return
         if data["role"] == "service":
             self.role = "service"
-            for i in (serv := data["services"]):
+            for i in data["services"]:
                 self.factory.services[i] = self
-            self.transport.write(b'{"res":"ok"}')
+            self.send({"res":"ok"})
             return
 
     def make_request(self, service, data, jobid):
         data = {"type": "call", "service": service, "data": data, "jobid": jobid}
-        self.transport.write(bytes(json.dumps(data), "UTF8"))
-        return
+        self.send(data)
 
     def make_respond(self, jobid, data):
         data = {"type": "resp", "data": data, "jobid": jobid}
-        self.transport.write(bytes(json.dumps(data), "UTF8"))
+        self.send(data)
 
 
 class RpcServer(protocol.Factory):
@@ -82,5 +81,5 @@ class RpcServer(protocol.Factory):
         return RpcProtocol(self)
 
 
-endpoints.serverFromString(reactor, "tcp:1234").listen(RpcServer())
+endpoints.serverFromString(reactor, "tcp:274").listen(RpcServer())
 reactor.run()
