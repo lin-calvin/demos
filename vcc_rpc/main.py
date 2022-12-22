@@ -3,19 +3,23 @@ import uuid
 from twisted.internet import protocol, reactor, endpoints
 
 
-class Echo(protocol.Protocol):
+class RpcProtocol(protocol.Protocol):
     def __init__(self, factory):
         print(1)
         self.factory: EchoFactory = factory
 
     def connectionLost(self,res):
-        self.factory.clients.remove(self)
+        if self.role=="client":
+            self.factory.clients.remove(self)
         return
     def dataReceived(self, data):
         try:
             data = json.loads(data)
+            print(data)
         except json.JSONDecodeError:
             self.transport.write(b'{"res":"error","error":"not json"}')
+            return
+        if "res" in data:
             return
         if data["type"] == "handshake":
             self.do_handshake(data)
@@ -32,6 +36,7 @@ class Echo(protocol.Protocol):
             )
 
     def do_handshake(self, data):
+        self.role=data["role"]
         if data["role"] == "client":
             self.role = "client"
             self.factory.clients.append(self)
@@ -60,7 +65,7 @@ class Echo(protocol.Protocol):
         self.transport.write(bytes(json.dumps(data), "UTF8"))
 
 
-class EchoFactory(protocol.Factory):
+class RpcServer(protocol.Factory):
     services = {}
     clients = []
     promises = {}
@@ -74,8 +79,8 @@ class EchoFactory(protocol.Factory):
         del self.promises[jobid]
 
     def buildProtocol(self, addr):
-        return Echo(self)
+        return RpcProtocol(self)
 
 
-endpoints.serverFromString(reactor, "tcp:1234").listen(EchoFactory())
+endpoints.serverFromString(reactor, "tcp:1234").listen(RpcServer())
 reactor.run()
