@@ -25,19 +25,20 @@ class RpcProtocol(protocol.Protocol):
             return
         if "res" in data:
             return
-        if data["type"] == "handshake":
-            self.do_handshake(data)
-            logging.debug(self.factory.services)
-        elif self not in self.factory.clients:
-            self.send({"res":"error","error":"invalid request"})
-        elif data["type"] == "respond":
-            self.factory.make_respond(data["jobid"], data["data"])
-            ret = {"res": "ok", "next_jobid": str(uuid.uuid4())}
-            self.send(ret)
-        elif data["type"] == "request":
-            self.factory.make_request(
-                self, data["service"], data["data"], data["jobid"]
-            )
+        match data["type"]:
+            case "handshake":
+                self.do_handshake(data)
+                logging.debug(self.factory.services)
+            case "respond":
+                self.factory.make_respond(data["jobid"], data["data"])
+                ret = {"res": "ok", "next_jobid": str(uuid.uuid4())}
+                self.send(ret)
+            case "request" if self in self.factory.clients:
+                self.factory.make_request(
+                    self, data["service"], data["data"], data["jobid"]
+                )
+            case _:
+                self.send({"res":"error","error":"invalid request"})
 
     def do_handshake(self, data):
         self.role=data["role"]

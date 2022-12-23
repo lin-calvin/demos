@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 import base
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 class Main:
     def login(self, username, password):
