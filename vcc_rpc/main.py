@@ -91,5 +91,5 @@ class RpcServer(protocol.Factory):
         return RpcProtocol(self)
 
 
-endpoints.serverFromString(reactor, "tcp:1234").listen(RpcServer())
+endpoints.serverFromString(reactor, "tcp:274").listen(RpcServer())
 reactor.run()
