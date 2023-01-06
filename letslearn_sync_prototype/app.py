@@ -18,8 +18,8 @@ def sync(token):
     for i in data['data']:
         state=reducer(state,i)
     print(state)
-    resp=flask.Response("")
-    resp.headers["Access-Control-Request"]=""
+    resp=flask.Response(json.dumps({"res":"ok"}))
+    resp.headers["Access-Control-Allow-Origin"]="*"
     return resp
 app.run()
 
