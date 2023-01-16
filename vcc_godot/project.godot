@@ -1,0 +1,48 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "Node",
+"class": "VccClient",
+"language": "GDScript",
+"path": "res://webvcc_client.gd"
+} ]
+_global_script_class_icons={
+"VccClient": ""
+}
+
+[application]
+
+config/name="vcc_godot"
+run/main_scene="res://main.tscn"
+run/low_processor_mode=true
+config/icon="res://icon.png"
+
+[display]
+
+window/size/width=600
+window/size/height=1024
+window/dpi/allow_hidpi=true
+window/energy_saving/keep_screen_on=false
+window/handheld/orientation="portrait"
+window/ios/hide_home_indicator=false
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[physics]
+
+common/enable_pause_aware_picking=true
+
+[rendering]
+
+vram_compression/import_etc=true
+environment/default_environment="res://default_env.tres"
