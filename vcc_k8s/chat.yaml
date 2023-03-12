@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat
+  labels:
+    app: chat
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat
+  template:
+    metadata:
+      labels:
+        app: chat
+        tier: backend
+    spec:
+      containers:
+      - name: chat
+        image: "docker.io/calvinlin180/vcc_rpc"
+        command: ["/usr/local/bin/python3.11","/app/services/chat.py"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+          - name: RPCHOST
+            value: "rpcserver:2474"
+          - name: DATABASE
+            value: "MySQLDatabase('vcc',host ='mysql',user='root',passwd=os.getenv('MYSQL_PASS'))"
+          - name: MYSQL_PASS
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass-6h7g2ctgm7
+                key: password

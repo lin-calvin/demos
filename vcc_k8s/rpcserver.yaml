@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rpcserver
+  labels:
+    app: rpcserver
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rpcserver
+  template:
+    metadata:
+      labels:
+        app: rpcserver
+        tier: backend
+    spec:
+      containers:
+      - name: rpcserver
+        image: "docker.io/calvinlin180/vcc_rpc"
+        command: ["/usr/local/bin/python3.11","/app/server/main.py"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+          - name: RPCHOST
+            value: "0.0.0.0:2474"
+        ports:
+        - containerPort: 2474
+

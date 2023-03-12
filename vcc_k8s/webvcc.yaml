@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webvcc
+  labels:
+    app: webvcc
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webvcc
+  template:
+    metadata:
+      labels:
+        app: webvcc
+        tier: backend
+    spec:
+      containers:
+      - name: webvcc
+        image: "docker.io/calvinlin180/vcc_webvcc"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+          - name: RPCHOST
+            value: "rpcserver:2474"
+          - name: REDIS_URL
+            value: "redis://redis"
+        ports:
+        - containerPort: 2479
+
