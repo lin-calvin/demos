@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: login
+  labels:
+    app: login
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: login
+  template:
+    metadata:
+      labels:
+        app: login
+        tier: backend
+    spec:
+      containers:
+      - name: login
+        image: "docker.io/calvinlin180/vcc_rpc"
+        command: ["/usr/local/bin/python3.11","/app/services/file.py"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+          - name: RPCHOST
+            value: "rpcserver:2474"
+          - name: MINIO_URL
+            valueFrom:
+              secretKeyRef:
+                name: minio-url
+                key: password
+          - name: MINIO_ACCESS
+            valueFrom:
+              secretKeyRef:
+                name: minio-access
+                key: password
+          - name: MINIO_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: minio-secret
+                key: password
