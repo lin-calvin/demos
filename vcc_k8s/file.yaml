@@ -42,3 +42,8 @@ spec:
               secretKeyRef:
                 name: minio-secret
                 key: password
+          - name: FILE_BUCKET_PREFIX
+            valueFrom:
+              secretKeyRef:
+                name: file-bucket-prefix
+                key: prefix
