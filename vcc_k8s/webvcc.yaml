@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: webvcc
-        image: "docker.io/calvinlin180/vcc_webvcc"
+        image: "ghcr.io/vcc-chat/webvcc"
         resources:
           requests:
             cpu: 100m

@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: rpcserver
-        image: "docker.io/calvinlin180/vcc_rpc"
+        image: "ghcr.io/vcc-chat/vcc_rpc"
         command: ["/usr/local/bin/python3.11","/app/server/main.py"]
         resources:
           requests:
