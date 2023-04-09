@@ -28,7 +28,7 @@ spec:
           - name: RPCHOST
             value: "rpcserver:2474"
           - name: DATABASE
-            value: "ReconnectDB(MySQLDatabase,'vcc',host ='mysql',user='root',passwd=os.getenv('MYSQL_PASS')"
+            value: "ReconnectDB(MySQLDatabase,'vcc',host ='mysql',user='root',passwd=os.getenv('MYSQL_PASS'))"
           - name: MYSQL_PASS
             valueFrom:
               secretKeyRef:
