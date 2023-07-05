@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: login
+  name: file
   labels:
-    app: login
+    app: file
     tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: login
+      app: file
   template:
     metadata:
       labels:
-        app: login
+        app: file
         tier: backend
     spec:
       containers:
-      - name: login
+      - name: file
         image: "ghcr.io/vcc-chat/vcc_rpc"
         command: ["/usr/local/bin/python3.11","/app/services/file.py"]
         resources:
