@@ -27,6 +27,8 @@ spec:
         env:
           - name: RPCHOST
             value: "rpcserver:2474"
+          - name: MINIO_SSL
+            value: "1"
           - name: MINIO_URL
             valueFrom:
               secretKeyRef:

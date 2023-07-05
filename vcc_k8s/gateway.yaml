@@ -6,6 +6,13 @@ spec:
   rules:
    - http:
       paths:
+      - path: /oauth/github
+        pathType: Prefix
+        backend:
+          service:
+            name: oauth_github
+            port:
+              number: 8888
       - path: /
         pathType: Prefix
         backend:

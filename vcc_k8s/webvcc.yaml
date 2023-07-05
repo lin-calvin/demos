@@ -30,4 +30,19 @@ spec:
             value: "redis://redis"
         ports:
         - containerPort: 2479
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webvcc
+  labels:
+    app: webvcc
+    tier: backend
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 2479
+    targetPort: 2479
+  selector:
+    app: webvcc
+    tier: backend
