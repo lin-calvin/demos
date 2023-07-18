@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oauth_github
+  name: oauth-github
   labels:
-    app: oauth_github
+    app: oauth-github
     tier: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: oauth_github
+      app: oauth-github
   template:
     metadata:
       labels:
-        app: oauth_github
+        app: oauth-github
         tier: backend
     spec:
       containers:
-      - name: oauth_github
+      - name: oauth-github
         image: "ghcr.io/vcc-chat/vcc_rpc"
         command: ["/usr/local/bin/python3.11","/app/services/oauth_github.py"]
         resources:
@@ -43,21 +43,16 @@ spec:
                 name: github-oauth
                 key: secret
           - name: GH_CALLBACKURL
-            valueFrom:
-              secretKeyRef:
-                name: github-oauth
-                key: clientid
-          - name: GH_CALLBACKURL
             value: "https://$(VCC_DOMAIN)/oauth/github"
-          - name: HTTP_PORT
+          - name: OAUTH_GH_HTTP_PORT
             value: "8888"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: oauth_github
+  name: oauth-github
   labels:
-    app: oauth_github
+    app: oauth-github
     tier: backend
 spec:
   type: LoadBalancer
@@ -65,5 +60,5 @@ spec:
   - port: 8888
     targetPort: 8888
   selector:
-    app: oauth_github
+    app: oauth-github
     tier: backend
