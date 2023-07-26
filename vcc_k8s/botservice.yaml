@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: botservice
+  labels:
+    app: bot
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bot
+  template:
+    metadata:
+      labels:
+        app: bot
+        tier: backend
+    spec:
+      containers:
+      - name: bot
+        image: "ghcr.io/vcc-chat/vcc_rpc"
+        command: ["/usr/local/bin/python3.11","/app/services/bot.py"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+          - name: RPCHOST
+            value: "rpcserver:2474"
+          - name: DATABASE
+            value: "ReconnectDB(MySQLDatabase,'vcc',host ='mysql',user='root',passwd=os.getenv('MYSQL_PASS'))"
+          - name: MYSQL_PASS
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: password
